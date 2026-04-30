@@ -1,0 +1,290 @@
+/* 🌑 GLOBAL */
+body {
+  background: radial-gradient(circle at top, #111827, #020617);
+  color: #e5e7eb;
+  font-family: 'Inter', monospace;
+  margin: 0;
+}
+
+.container {
+  width: 65%;
+  margin: auto;
+  padding-top: 60px;
+  position: relative; /* 🔥 needed for cursor positioning */
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.logo {
+  font-size: 26px;
+}
+.logo span {
+  color: #22c55e;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+select {
+  background: #1f2937;       /* dark background */
+  color: #e5e7eb;            /* visible text */
+  border: 1px solid #374151;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* dropdown options */
+select option {
+  background: #111827;       /* dark dropdown */
+  color: #e5e7eb;
+}
+select:hover {
+  border-color: #22c55e;
+}
+
+/* STATS */
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.wpm-box {
+  font-size: 28px;
+  color: #38bdf8;
+}
+
+.time-box {
+  font-size: 40px;
+  color: #facc15;
+  margin: auto;
+}
+
+/* TEXT */
+#text {
+  font-size: 30px;
+  line-height: 2.2;
+  padding: 20px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  position: relative;
+}
+
+/* characters */
+#text span {
+  opacity: 0.35;
+  color: #6b7280;
+}
+
+#text span.active {
+  opacity: 0.8;
+}
+
+#text span.correct {
+  color: #22c55e !important;
+  opacity: 1;
+}
+
+#text span.wrong {
+  color: #ef4444 !important;
+  opacity: 1;
+}
+/* 🔥 SMOOTH CURSOR (NEW SYSTEM) */
+#cursor {
+  position: absolute;
+  width: 2px;
+  height: 1.5em;
+  background: #facc15;
+
+  border-radius: 2px;
+  pointer-events: none;
+
+  /* ✨ smooth sliding */
+  transition: left 0.08s ease, top 0.08s ease;
+
+  animation: blink 1s infinite;
+
+  z-index: 10;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* INPUT */
+textarea {
+  position: fixed;
+  opacity: 0;
+}
+
+/* RESULT */
+#result {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+#result.show {
+  display: flex;
+}
+
+.result-card {
+  background: rgba(255,255,255,0.05);
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+
+.result-stats {
+  display: flex;
+  gap: 40px;
+  font-size: 28px;
+}
+
+.result-stats span {
+  display: block;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+#result h2 {
+  font-size: 48px;
+  color: #facc15;
+}
+
+#result p {
+  font-size: 28px;
+}
+
+#finalWpm {
+  color: #22c55e;
+}
+#finalAccuracy {
+  color: #38bdf8;
+}
+
+.result-card {
+  background: rgba(255,255,255,0.05);
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  width: 700px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.result-stats div {
+  font-size: 18px;
+}
+
+.result-stats span {
+  display: block;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+/* HEATMAP */
+#heatmap {
+  display: grid;
+  grid-template-columns: repeat(30, 10px);
+  gap: 4px;
+  margin-top: 20px;
+}
+
+#heatmap div {
+  width: 10px;
+  height: 10px;
+  background: #222;
+}
+
+canvas {
+  filter: drop-shadow(0 0 10px rgba(34,197,94,0.3));
+}
+
+#heatmap div {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  position: relative;
+}
+
+/* TOOLTIP */
+#heatmap div::after {
+  content: attr(data-wpm) " WPM";
+  position: absolute;
+  bottom: 140%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: #111;
+  color: #fff;
+  font-size: 10px;
+  padding: 4px 6px;
+  border-radius: 4px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+/* SHOW ON HOVER */
+#heatmap div:hover::after {
+  opacity: 1;
+}
+
+#heatmap div {
+  opacity: 0;
+  transform: scale(0.5);
+  animation: popIn 0.3s forwards;
+}
+
+@keyframes popIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#leaderboard div {
+  padding: 6px 0;
+  font-size: 16px;
+}
+
+#leaderboard div:first-child {
+  color: #22c55e; /* highlight top scorer */
+  font-weight: bold;
+}
+
+#username {
+  background: #111827;
+  color: #e5e7eb;
+  border: 1px solid #374151;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+#text span.active {
+  opacity: 1;
+  color: #e5e7eb;
+}
+
+#text span {
+  transition: all 0.2s ease;
+}

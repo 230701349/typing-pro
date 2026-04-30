@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Typing Pro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">typing<span>pro</span></div>
+
+    <input id="username" placeholder="Enter your name" />
+
+    <div class="controls">
+      <select onchange="changeTime(this.value)">
+        <option value="15">15s</option>
+        <option value="30">30s</option>
+        <option value="60" selected>60s</option>
+      </select>
+
+      <select onchange="changeDifficulty(this.value)">
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="app">
+
+    <div class="stats">
+      <div class="wpm-box">WPM : <span id="wpm">0</span></div>
+      <div class="time-box">TIME : <span id="time">60</span></div>
+    </div>
+
+<div id="text"></div>
+
+<textarea id="input"></textarea>
+<div id="cursor"></div>
+
+  </div>
+
+  <!-- RESULT -->
+  <div id="result">
+
+  <div class="result-card">
+
+    <h2>Result</h2>
+
+    <h3>🏆 Top Scores</h3>
+<div id="leaderboard"></div>
+
+    <!-- STATS -->
+    <div class="result-stats">
+      <div>
+        WPM
+        <span id="finalWpm">0</span>
+      </div>
+
+      <div>
+        Accuracy
+        <span id="finalAccuracy">0</span>%
+      </div>
+
+      <div>
+        Avg
+        <span id="avgWpm">0</span>
+      </div>
+
+      <div>
+        Peak
+        <span id="peakWpm">0</span>
+      </div>
+      <div id="history" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- GRAPH -->
+    <canvas id="wpmChart" height="150"></canvas>
+
+    <!-- HEATMAP -->
+    <div id="heatmap"></div>
+
+    <button onclick="restart()">Try Again</button>
+
+  </div>
+
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWMhiCTIHCJ_71_5fNN70IWPLZXAZQxO8",
+  authDomain: "typing-pro-fa471.firebaseapp.com",
+  projectId: "typing-pro-fa471"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.saveResult = async function(name, wpm, accuracy) {
+  try {
+    await addDoc(collection(db, "results"), {
+      name,
+      wpm,
+      accuracy,
+      time: new Date()
+    });
+
+    console.log("✅ Saved to Firebase");
+  } catch (e) {
+    console.error("❌ Error:", e);
+  }
+};
+
+window.loadHistory = async function() {
+  const q = query(
+    collection(db, "results"),
+    orderBy("time", "desc"),
+    limit(5)
+  );
+
+  const snapshot = await getDocs(q);
+
+  const container = document.getElementById("history");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+
+    const div = document.createElement("div");
+    div.innerHTML = `⚡ ${d.wpm} WPM | 🎯 ${d.accuracy}%`;
+
+    container.appendChild(div);
+  });
+};
+
+import { getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+window.loadLeaderboard = async function() {
+  const q = query(
+    collection(db, "results"),
+    orderBy("wpm", "desc"),
+    limit(10)
+  );
+
+  const snapshot = await getDocs(q);
+  const container = document.getElementById("leaderboard");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  let rank = 1;
+  snapshot.forEach(doc => {
+    const d = doc.data();
+
+    const div = document.createElement("div");
+    div.innerHTML = `#${rank} — ${d.name || "Guest"} : ⚡ ${d.wpm} WPM`;
+
+    container.appendChild(div);
+    rank++;
+  });
+};
+
+</script>
+</body>
+</html>
